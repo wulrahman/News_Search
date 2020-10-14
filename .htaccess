@@ -1,0 +1,78 @@
+RewriteEngine on
+
+RewriteBase /
+
+Deny from env=block_bad_bots
+
+RewriteCond %{HTTP_USER_AGENT} libwww-perl.*
+
+RewriteRule .* [F,L]
+
+RewriteRule ^$ main/index.php [L]
+
+RewriteRule ^content$ common/ [L]
+
+RewriteRule ^news$ main/ [L]
+
+RewriteRule ^ddos$ common/?action=ddos [L]
+
+RewriteRule ^tos$ common/?action=tos [L]
+
+RewriteRule ^privacy$ common/?action=privacy [L]
+
+RewriteRule ^setting$ common/?action=setting [L]
+
+RewriteRule ^forgot$ common/?action=forgot [L]
+
+RewriteRule ^login$ common/?action=login [L]
+
+RewriteRule ^register$ common/?action=register [L]
+
+RewriteRule ^logout$ common/?action=logout [L]
+
+RewriteRule ^verify/([^/\.]+)/([^/\.]+)$ common/?action=validate&id=$1&hash=$2 [L]
+
+RewriteRule ^games/game/([^/\.]+)$ games/?action=game&id=$1 [L]
+
+RewriteRule ^games/category/([^/\.]+)/([^/\.]+)/([0-9]+)$ games/?action=category&seo=$1&sortby=$2&page=$3 [L]
+
+RewriteRule ^games/category/([^/\.]+)/([^/\.]+)$ games/?action=category&seo=$1&sortby=$2 [L]
+
+RewriteRule ^games/category/([^/\.]+)$ games/?action=category&seo=$1 [L]
+
+RewriteRule ^games/html/([^/\.]+)$ games/?action=html&id=$1 [L]
+
+RewriteRule ^redirect/([^/\.]+)/([^/\.]+)$ common/?action=redirect&type=$1&id=$2 [L]
+
+ErrorDocument 404 /?action=404
+
+
+Header unset ETag
+
+FileETag None
+
+# 480 weeks
+<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$">
+Header set Cache-Control "max-age=290304000, public"
+</FilesMatch>
+
+# 2 DAYS
+<FilesMatch "\.(xml|txt)$">
+Header set Cache-Control "max-age=172800, public, must-revalidate"
+</FilesMatch>
+
+# 2 HOURS
+<FilesMatch "\.(html|htm)$">
+Header set Cache-Control "max-age=7200, must-revalidate"
+</FilesMatch>
+
+<ifModule mod_gzip.c>
+  mod_gzip_on Yes
+  mod_gzip_dechunk Yes
+  mod_gzip_item_include file \.(html?|txt|css|js|php|pl|swf)$
+  mod_gzip_item_include handler ^cgi-script$
+  mod_gzip_item_include mime ^text/.*
+  mod_gzip_item_include mime ^application/x-javascript.*
+  mod_gzip_item_exclude mime ^image/.*
+  mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
+</ifModule>
